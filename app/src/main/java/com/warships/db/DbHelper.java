@@ -1,4 +1,4 @@
-package com.warships;
+package com.warships.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,13 +21,11 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(UserContract.SQL_CREATE_ENTRIES);
         db.execSQL(SettingsContract.SQL_CREATE_ENTRIES);
-        db.execSQL(AppSettingsContract.SQL_CREATE_ENTRIES);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(UserContract.SQL_DELETE_ENTRIES);
         db.execSQL(SettingsContract.SQL_DELETE_ENTRIES);
-        db.execSQL(AppSettingsContract.SQL_DELETE_ENTRIES);
         onCreate(db);
     }
 

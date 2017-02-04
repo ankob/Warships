@@ -1,4 +1,4 @@
-package com.warships;
+package com.warships.db;
 
 import android.provider.BaseColumns;
 
