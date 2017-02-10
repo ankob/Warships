@@ -1,7 +1,9 @@
 package com.warships;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +11,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.warships.db.DbHelper;
-import com.warships.db.UserContract;
 import com.warships.model.User;
 
 public class LoginActivity extends AppCompatActivity {
@@ -22,25 +23,36 @@ public class LoginActivity extends AppCompatActivity {
             new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    String name = ((EditText) findViewById(R.id.editName)).getText().toString();
+                    String pass = ((EditText) findViewById(R.id.editPass)).getText().toString();
                     if (((CheckBox) findViewById(R.id.newUserCheckBox)).isChecked()) {
-                        DbHelper dbHelper = new DbHelper(getBaseContext());
+                        DbHelper dbHelper = new DbHelper(view.getContext());
                         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-                        String name = ((EditText) findViewById(R.id.editName)).getText().toString();
-                        String pass = ((EditText) findViewById(R.id.editPass)).getText().toString();
-
-                        if (!pass.equals(((EditText) findViewById(R.id.repeatPass)).getText().toString())) {
+                        EditText repeatPass = (EditText) findViewById(R.id.repeatPass);
+                        if (!pass.equals(repeatPass.getText().toString())) {
+                            repeatPass.setError(getString(R.string.error_passwords_are_not_equal));
                             return;
                         }
-
-                        ContentValues cv = new ContentValues();
-
-                        cv.put(UserContract.User.NAME, name);
-                        cv.put(UserContract.User.HASH, User.calcHash(name, pass));
-
-                        db.insert(UserContract.User.TABLE_NAME, null, cv);
+                        User.writeNewUserToDB(db, name, pass);
+                        db = dbHelper.getReadableDatabase();
+                        User.getUserFromDB(db, name, pass);
+                        if (User.getCurrentUser() == null) {
+                            Snackbar sb = Snackbar.make(view.getRootView(), R.string.error_while_creating_user, Snackbar.LENGTH_SHORT);
+                            sb.show();
+                        } else {
+                            finish();
+                        }
                     } else {
+                        DbHelper dbHelper = new DbHelper(view.getContext());
+                        SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+                        User.getUserFromDB(db, name, pass);
+                        if (User.getCurrentUser() == null) {
+                            Snackbar sb = Snackbar.make(view.getRootView(), R.string.error_while_login, Snackbar.LENGTH_SHORT);
+                            sb.show();
+                        } else {
+                            finish();
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.warships;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,8 +19,6 @@ import com.warships.model.User;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    User currentUser = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +34,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        if (currentUser == null) {
-
+        if (User.getCurrentUser() == null) {
+            Intent loginActivity = new Intent(this, LoginActivity.class);
+            startActivity(loginActivity);
         }
     }
 
