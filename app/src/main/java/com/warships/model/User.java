@@ -8,6 +8,7 @@ import com.warships.db.UserContract;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.List;
 
 /**
  * Created by Andrew on 04-Feb-17.
@@ -24,6 +25,11 @@ public class User {
     private static User currentUser = null;
     public static User getCurrentUser() {
         return currentUser;
+    }
+
+    private List<BattleRecord> battleRecords;
+    public List<BattleRecord> getBattleRecords() {
+        return battleRecords;
     }
 
     private User(long id, String name) {
@@ -54,6 +60,7 @@ public class User {
                 cursor.getLong(cursor.getColumnIndex(UserContract.User._ID)),
                 cursor.getString(cursor.getColumnIndex(UserContract.User.NAME))
         );
+        currentUser.battleRecords = BattleRecord.getRecordsFromDB(db, currentUser.getId());
     }
 
     public static void writeNewUserToDB(SQLiteDatabase db, String name, String pass) {
@@ -80,5 +87,4 @@ public class User {
             UserContract.User._ID,
             UserContract.User.NAME,
     };
-
 }

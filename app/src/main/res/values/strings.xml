@@ -12,4 +12,9 @@
     <string name="error_while_creating_user">Something went wrong =(</string>
     <string name="error_while_login">Wrong user name or password</string>
     <string name="error_passwords_are_not_equal">Passwords have to be equal!</string>
+    <string name="settings_nav_title">Settings</string>
+    <string name="play_button_label">Play</string>
+    <string name="settings_main_screen_label">Current Settings</string>
+    <string name="stat_main_screen_label">Current Winrate</string>
+    <string name="player_greetings">Welcome, %s</string>
 </resources>
