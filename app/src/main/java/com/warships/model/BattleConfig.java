@@ -13,6 +13,7 @@ public class BattleConfig {
     public static final int MIN_SHIP_LENGTH = 1;
 
     private int maxShipsNumber = 5;
+    private int maxShipSize = 5;
     private int maxShootsNumber = 100;
     private int fieldSize = 8;
 
@@ -34,6 +35,10 @@ public class BattleConfig {
         return fieldSize;
     }
 
+    public int getMaxShipSize() {
+        return maxShipSize;
+    }
+
 }
 
 class BattleConfigEditor {
@@ -49,7 +54,7 @@ class BattleConfigEditor {
      * starting from 0
      */
     public void addShip(int top, int bottom, int left, int right) throws FormattingError{
-        if (battleConfig.ships.size() == battleConfig.getMaxShootsNumber())
+        if (battleConfig.ships.size() == battleConfig.getMaxShipsNumber())
             throw new FormattingError("Ships limit exhausted, try remove existing ship.");
         if (top < 0 || bottom < 0 || left < 0 || right < 0)
             throw new FormattingError("Coordinates could not be negative.");

@@ -17,4 +17,7 @@
     <string name="settings_main_screen_label">Current Settings</string>
     <string name="stat_main_screen_label">Current Winrate</string>
     <string name="player_greetings">Welcome, %s</string>
+    <string name="settings_ships_number_label">Ships Number</string>
+    <string name="settings_name_label">Configuration Name</string>
+    <string name="ships_size_header">Ships</string>
 </resources>
