@@ -20,4 +20,5 @@
     <string name="settings_ships_number_label">Ships Number</string>
     <string name="settings_name_label">Configuration Name</string>
     <string name="ships_size_header">Ships</string>
+    <string name="main_screen_nav_label">Main</string>
 </resources>

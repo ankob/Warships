@@ -1,5 +1,7 @@
 package com.warships;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,8 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.warships.model.BattleRecord;
 import com.warships.model.User;
+
+import layout.MainScreenFragment;
+import layout.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -33,6 +37,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        Fragment newFragment = new MainScreenFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        transaction.replace(R.id.content_main, newFragment);
+        transaction.addToBackStack(null);
+
+        transaction.commit();
     }
 
     @Override
@@ -50,18 +61,6 @@ public class MainActivity extends AppCompatActivity
         if (User.getCurrentUser() == null) {
             Intent loginActivity = new Intent(this, LoginActivity.class);
             startActivity(loginActivity);
-        } else {
-            TextView userGreetings = (TextView) findViewById(R.id.player_greetings_label);
-            TextView currentSettings = (TextView) findViewById(R.id.current_settings_label);
-            TextView currentWinrate = (TextView) findViewById(R.id.current_winrate_label);
-            userGreetings.setText(String.format((String) getText(R.string.player_greetings), User.getCurrentUser().getName()));
-            int wins = 0;
-            int games = 0;
-            for (BattleRecord rec: User.getCurrentUser().getBattleRecords()) {
-                games ++;
-                if(rec.isWin()) wins++;
-            }
-            currentWinrate.setText(String.format("%02.2f%%", ((float) wins) / Math.max(games, 1)));
         }
         super.onResume();
     }
@@ -94,8 +93,15 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_leaderboard) {
+        if (id == R.id.nav_settings) {
+            // Create new fragment and transaction
+            Fragment newFragment = new SettingsFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
+            transaction.replace(R.id.content_main, newFragment);
+            transaction.addToBackStack(null);
+
+            transaction.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

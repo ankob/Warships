@@ -87,4 +87,14 @@ public class User {
             UserContract.User._ID,
             UserContract.User.NAME,
     };
+
+    public float getWinRate() {
+        int wins = 0;
+        int games = 0;
+        for (BattleRecord rec: User.getCurrentUser().getBattleRecords()) {
+            games ++;
+            if(rec.isWin()) wins++;
+        }
+        return (float) wins / Math.max(games, 1);
+    }
 }
