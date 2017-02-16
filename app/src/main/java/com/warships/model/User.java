@@ -32,6 +32,16 @@ public class User {
         return battleRecords;
     }
 
+    private List<BattleConfig> settings;
+    public List<BattleConfig> getSettings() {
+        return settings;
+    }
+
+    private BattleConfig currentSettings;
+    public BattleConfig getCurrentSettings() {
+        return currentSettings;
+    }
+
     private User(long id, String name) {
         this.id = id;
         this.name = name;
@@ -60,7 +70,14 @@ public class User {
                 cursor.getLong(cursor.getColumnIndex(UserContract.User._ID)),
                 cursor.getString(cursor.getColumnIndex(UserContract.User.NAME))
         );
+        reloadCurrentUserData(db);
+    }
+
+    public static void reloadCurrentUserData(SQLiteDatabase db) {
         currentUser.battleRecords = BattleRecord.getRecordsFromDB(db, currentUser.getId());
+        currentUser.settings = BattleConfig.getRecordsFromDB(db, currentUser.getId());
+        for (BattleConfig bc: currentUser.settings)
+            if (bc.isCurrent()) currentUser.currentSettings = bc;
     }
 
     public static void writeNewUserToDB(SQLiteDatabase db, String name, String pass) {
@@ -97,4 +114,6 @@ public class User {
         }
         return (float) wins / Math.max(games, 1);
     }
+
+
 }

@@ -13,14 +13,4 @@
     tools:context="com.warships.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <!--
-    <include
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        layout="@layout/fragment_main_screen"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/main_fragment" />
-     -->
-
 </RelativeLayout>

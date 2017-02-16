@@ -1,7 +1,17 @@
 package com.warships.model;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.warships.db.SettingsContract;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,16 +22,23 @@ public class BattleConfig {
     public static final int MAX_SHIP_LENGTH = 4;
     public static final int MIN_SHIP_LENGTH = 1;
 
+    private long id;
     private int maxShipsNumber = 5;
     private int maxShipSize = 5;
     private int maxShootsNumber = 100;
     private int fieldSize = 8;
-
-    HashSet<Ship> ships;
+    private boolean current;
+    private String name;
+    private List<Integer> shipsPlacement;
 
     public Battle initBattle() {
-        return new Battle();
+        return new Battle(this);
     }
+
+    public long getId() {
+        return id;
+    }
+
 
     public int getMaxShipsNumber() {
         return maxShipsNumber;
@@ -39,51 +56,115 @@ public class BattleConfig {
         return maxShipSize;
     }
 
-}
-
-class BattleConfigEditor {
-    private BattleConfig battleConfig;
-
-    public class FormattingError extends Exception {
-        public FormattingError(String msg) { super(msg); }
+    public List<Integer> getShipsPlacement() {
+        return shipsPlacement;
     }
 
-    /**
-     * Creates new ship for given settings. Throws exception if placement is wrong or
-     * ships limit is exhausted. Coordinates count from top to bottom, from left to right
-     * starting from 0
-     */
-    public void addShip(int top, int bottom, int left, int right) throws FormattingError{
-        if (battleConfig.ships.size() == battleConfig.getMaxShipsNumber())
-            throw new FormattingError("Ships limit exhausted, try remove existing ship.");
-        if (top < 0 || bottom < 0 || left < 0 || right < 0)
-            throw new FormattingError("Coordinates could not be negative.");
-        if (top != bottom && left != right)
-            throw new FormattingError("Ship has to be oriented horizontally or vertically.");
-        if (top < bottom || right < left)
-            throw new FormattingError("Wrong coordinates. Top must be less or equal to bottom, left must be less or equal to right.");
-        if (bottom - top + 1 > BattleConfig.MAX_SHIP_LENGTH || right - left + 1 > BattleConfig.MAX_SHIP_LENGTH)
-            throw new FormattingError("Ship is too long.");
-        if (bottom - top + 1 < BattleConfig.MIN_SHIP_LENGTH || right - left + 1 < BattleConfig.MIN_SHIP_LENGTH)
-            throw new FormattingError("Ship is too small.");
-        boolean isIntersection = false;
-        Ship newShip = new Ship(top, bottom, right, left);
-        for (Ship s: battleConfig.ships) {
-            isIntersection = isIntersection || s.isIntersecting(newShip);
+    public boolean isCurrent() {
+        return current;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BattleConfig(
+            long id,
+            List<Integer> shipsPlacement,
+            int maxShootsNumber,
+            boolean current,
+            String name
+    ) {
+        this.id = id;
+        this.shipsPlacement = shipsPlacement;
+        this.maxShootsNumber = maxShootsNumber;
+        this.current = current;
+        this.name = name;
+
+    }
+
+    public static List<BattleConfig> getRecordsFromDB(SQLiteDatabase db, long player) {
+        String[] projection = {
+                SettingsContract.Settings._ID,
+                SettingsContract.Settings.NAME,
+                SettingsContract.Settings.SHOOTS,
+                SettingsContract.Settings.PLACEMENT,
+                SettingsContract.Settings.CURRENT
+        };
+        String selection = SettingsContract.Settings.USER + " = ?";
+        String[] selectionArgs = { Long.toString(player) };
+        Cursor cursor = db.query(
+                SettingsContract.Settings.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                null,
+                null
+        );
+        List<BattleConfig> result = new ArrayList<>();
+        while(cursor.moveToNext()) {
+            result.add(new BattleConfig(
+                    cursor.getLong(cursor.getColumnIndex(SettingsContract.Settings._ID)),
+                    textToShipsPlacement(cursor.getString(cursor.getColumnIndex(SettingsContract.Settings.PLACEMENT))),
+                    cursor.getInt(cursor.getColumnIndex(SettingsContract.Settings.SHOOTS)),
+                    cursor.getInt(cursor.getColumnIndex(SettingsContract.Settings.CURRENT)) == 1,
+                    cursor.getString(cursor.getColumnIndex(SettingsContract.Settings.NAME))
+            ));
         }
-        if (isIntersection)
-            throw new FormattingError("Wrong coordinates. Ship intersects with another one.");
-        battleConfig.ships.add(newShip);
+        return result;
     }
 
-    public void removeShipAt(int x, int y) {
-        Ship shipToDelete = null;
-        AreaCell selectedCell = new AreaCell(x, y);
-        for (Ship s: battleConfig.ships)
-            if (s.isIntersecting(selectedCell))
-                shipToDelete = s;
-        if (shipToDelete != null)
-            battleConfig.ships.remove(shipToDelete);
+    public void setCurrent(boolean current) {
+        this.current = current;
+    }
+
+    public void deleteConfig(SQLiteDatabase db) {
+        String deletion = SettingsContract.Settings._ID + " = ?";
+        String[] deletionArgs = { Long.toString(id) };
+        db.delete(
+                SettingsContract.Settings.TABLE_NAME,
+                deletion,
+                deletionArgs
+        );
+    }
+
+    public void setMaxShootsNumber(int maxShootsNumber) {
+        this.maxShootsNumber = maxShootsNumber;
+    }
+
+    public void setName(String name) {
+
+        this.name = name;
+    }
+
+    public void setShipsPlacement(List<Integer> shipsPlacement) {
+        this.shipsPlacement = shipsPlacement;
+    }
+
+    public void writeConfigToDB(SQLiteDatabase db) {
+        ContentValues cv = new ContentValues();
+
+        cv.put(SettingsContract.Settings.NAME, name);
+        cv.put(SettingsContract.Settings.CURRENT, current ? "1" : "0");
+        cv.put(SettingsContract.Settings.SHOOTS, maxShootsNumber);
+        cv.put(SettingsContract.Settings.USER, Long.toString(User.getCurrentUser().getId()));
+
+        StringBuilder placement = new StringBuilder();
+        for (Integer i: shipsPlacement) placement.append(i);
+
+        cv.put(SettingsContract.Settings.PLACEMENT, placement.toString());
+
+        db.insert(SettingsContract.Settings.TABLE_NAME, null, cv);
+    }
+
+    private static List<Integer> textToShipsPlacement(String s) {
+        String []sizes = s.split(",");
+        LinkedList<Integer> result = new LinkedList<>();
+        for (int i = 0; i < sizes.length; i++)
+            result.add(Integer.parseInt(sizes[i]));
+        return result;
     }
 }
 
@@ -136,11 +217,19 @@ class AreaCell implements Unit {
 class Ship implements Unit {
 
     private HashSet<Point> ship;
+    private int top;
+    private int bottom;
+    private int left;
+    private int right;
 
     /**
      * Naive constructor without any checks. For secure ship creation there is `addShip` method.
      */
     Ship(int top, int bottom, int left, int right) {
+        this.top = top;
+        this.bottom = bottom;
+        this.left = left;
+        this.right = right;
         ship = new HashSet<>();
         for(int x = left; x <= right; x++)
             for(int y = top; y <= bottom; y++)
@@ -153,4 +242,21 @@ class Ship implements Unit {
 
     @Override
     public Set<Point> getUnitArea() { return Collections.unmodifiableSet(ship); }
+
+    public int getRight() {
+        return right;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public int getBottom() {
+        return bottom;
+    }
+
+    public int getTop() {
+        return top;
+    }
+
 }

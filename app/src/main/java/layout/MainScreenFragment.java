@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.warships.R;
+import com.warships.model.BattleConfig;
 import com.warships.model.User;
 
 /**
@@ -50,6 +51,9 @@ public class MainScreenFragment extends Fragment {
             TextView currentSettings = (TextView) getView().findViewById(R.id.current_settings_label);
             TextView currentWinrate = (TextView) getView().findViewById(R.id.current_winrate_label);
             userGreetings.setText(String.format((String) getText(R.string.player_greetings), User.getCurrentUser().getName()));
+            BattleConfig currentUserSettings = User.getCurrentUser().getCurrentSettings();
+            if (currentUserSettings != null)
+                currentSettings.setText(currentUserSettings.getName());
             currentWinrate.setText(String.format("%02.2f%%", User.getCurrentUser().getWinRate()));
         }
         super.onResume();

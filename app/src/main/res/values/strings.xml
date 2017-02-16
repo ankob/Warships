@@ -21,4 +21,8 @@
     <string name="settings_name_label">Configuration Name</string>
     <string name="ships_size_header">Ships</string>
     <string name="main_screen_nav_label">Main</string>
+    <string name="settings_shoots_number_label">Shoots Number</string>
+    <string name="setting_select_config_label">Select Setting</string>
+    <string name="set_current_settings_button_label">Set as Current</string>
+    <string name="settings_name_duplicate_error">Settings with such name already exists</string>
 </resources>
