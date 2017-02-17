@@ -1,5 +1,6 @@
 package com.warships.model;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -26,16 +27,16 @@ public class BattleRecord {
     private int damage;
     private int shipsLeft;
 
-    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    public static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    public BattleRecord(long id, String time, String win, long player, int moves, int movesLeft, int damage, int shipsLeft) {
+    public BattleRecord(long id, String time, boolean win, long player, int moves, int movesLeft, int damage, int shipsLeft) {
         this.id = id;
         try {
             this.time = format.parse(time);
         } catch (ParseException e) {
             this.time = null;
         }
-        this.win = Boolean.valueOf(win);
+        this.win = win;
         this.player = player;
         this.moves = moves;
         this.movesLeft = movesLeft;
@@ -43,8 +44,18 @@ public class BattleRecord {
         this.shipsLeft = shipsLeft;
     }
 
-    public static void writeRecordToDB(SQLiteDatabase db, BattleRecord br) {
-        return;
+    public void writeRecordToDB(SQLiteDatabase db) {
+        ContentValues cv = new ContentValues();
+
+        cv.put(StatContract.Stat.WIN, win ? 1: 0);
+        cv.put(StatContract.Stat.GAME_TIME, win ? 1: 0);
+        cv.put(StatContract.Stat.DAMAGE, win ? 1: 0);
+        cv.put(StatContract.Stat.MOVES, win ? 1: 0);
+        cv.put(StatContract.Stat.MOVES_LEFT, win ? 1: 0);
+        cv.put(StatContract.Stat.PLAYER, win ? 1: 0);
+        cv.put(StatContract.Stat.SHIPS_LEFT, win ? 1: 0);
+
+        db.insert(StatContract.Stat.TABLE_NAME, null, cv);
     }
 
     public static List<BattleRecord> getRecordsFromDB(SQLiteDatabase db, long player) {
@@ -75,7 +86,7 @@ public class BattleRecord {
             result.add(new BattleRecord(
                     cursor.getLong(cursor.getColumnIndex(StatContract.Stat._ID)),
                     cursor.getString(cursor.getColumnIndex(StatContract.Stat.GAME_TIME)),
-                    cursor.getString(cursor.getColumnIndex(StatContract.Stat.WIN)),
+                    cursor.getInt(cursor.getColumnIndex(StatContract.Stat.WIN)) == 1,
                     cursor.getLong(cursor.getColumnIndex(StatContract.Stat.PLAYER)),
                     cursor.getInt(cursor.getColumnIndex(StatContract.Stat.MOVES)),
                     cursor.getInt(cursor.getColumnIndex(StatContract.Stat.MOVES_LEFT)),
@@ -92,10 +103,6 @@ public class BattleRecord {
 
     public boolean isWin() {
         return win;
-    }
-
-    public long getPlayer() {
-        return player;
     }
 
     public int getMoves() {

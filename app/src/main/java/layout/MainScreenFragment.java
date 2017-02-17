@@ -57,7 +57,7 @@ public class MainScreenFragment extends Fragment {
             BattleConfig currentUserSettings = User.getCurrentUser().getCurrentSettings();
             if (currentUserSettings != null)
                 currentSettings.setText(currentUserSettings.getName());
-            currentWinrate.setText(String.format("%02.2f%%", User.getCurrentUser().getWinRate()));
+            currentWinrate.setText(String.format("%02.2f%%", User.getCurrentUser().getWinRate() * 100));
         }
         super.onResume();
     }

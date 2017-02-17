@@ -25,4 +25,5 @@
     <string name="setting_select_config_label">Select Setting</string>
     <string name="set_current_settings_button_label">Set as Current</string>
     <string name="settings_name_duplicate_error">Settings with such name already exists</string>
+    <string name="surrender_button_label">Surrender</string>
 </resources>

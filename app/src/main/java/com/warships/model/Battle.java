@@ -1,7 +1,5 @@
 package com.warships.model;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +21,10 @@ public class Battle {
     private Set<Point> shoots = new HashSet<>();
     private BattleConfig config;
 
+
+    public BattleConfig getConfig() {
+        return config;
+    }
 
     public void shoot(int x, int y) {
         shoots.add(new Point(x ,y));
@@ -126,5 +128,21 @@ public class Battle {
             isIntersection = isIntersection || s.isIntersecting(newShip);
         }
         return !isIntersection;
+    }
+
+    public int getShootsNumber() {
+        return shoots.size();
+    }
+
+    public int getDamage() {
+        HashSet<Point> buf  = new HashSet<>();
+        for (Point p: shoots)
+            if (shipsCells.contains(p))
+                buf.add(p);
+        return buf.size();
+    }
+
+    public int getTotalShipsCellsNumber() {
+        return shipsCells.size();
     }
 }
