@@ -26,4 +26,11 @@
     <string name="set_current_settings_button_label">Set as Current</string>
     <string name="settings_name_duplicate_error">Settings with such name already exists</string>
     <string name="surrender_button_label">Surrender</string>
+    <string name="no_current_settings_message">Choose settings!</string>
+    <string name="exit_hint">Press back again to quit.</string>
+    <string name="stat_fragment_damage_label" >Damage</string>
+    <string name="stat_fragment_moves_left_label">Moves Left</string>
+    <string name="stat_fragment_ships_left_label">Ships Left</string>
+    <string name="stat_fragment_moves_label">Moves</string>
+    <string name="statistics_screen_nav_label">Statistics</string>
 </resources>

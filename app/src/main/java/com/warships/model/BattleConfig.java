@@ -211,19 +211,6 @@ interface Unit {
 
 }
 
-class AreaCell implements Unit {
-    private Point position;
-
-    AreaCell(int x, int y) {
-        position = new Point(x, y);
-    }
-
-    @Override
-    public Set<Point> getUnitArea() {
-        return Collections.unmodifiableSet(new HashSet<>(Collections.singletonList(position)));
-    }
-}
-
 class Ship implements Unit {
 
     private HashSet<Point> ship;

@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Andrew on 10-Feb-17.
  */
 
-public class BattleRecord {
+public class BattleRecord implements Comparable<BattleRecord> {
 
     private long id;
     private Date time;
@@ -48,12 +48,12 @@ public class BattleRecord {
         ContentValues cv = new ContentValues();
 
         cv.put(StatContract.Stat.WIN, win ? 1: 0);
-        cv.put(StatContract.Stat.GAME_TIME, win ? 1: 0);
-        cv.put(StatContract.Stat.DAMAGE, win ? 1: 0);
-        cv.put(StatContract.Stat.MOVES, win ? 1: 0);
-        cv.put(StatContract.Stat.MOVES_LEFT, win ? 1: 0);
-        cv.put(StatContract.Stat.PLAYER, win ? 1: 0);
-        cv.put(StatContract.Stat.SHIPS_LEFT, win ? 1: 0);
+        cv.put(StatContract.Stat.GAME_TIME, format.format(time));
+        cv.put(StatContract.Stat.DAMAGE, damage);
+        cv.put(StatContract.Stat.MOVES, moves);
+        cv.put(StatContract.Stat.MOVES_LEFT, movesLeft);
+        cv.put(StatContract.Stat.PLAYER, player);
+        cv.put(StatContract.Stat.SHIPS_LEFT, shipsLeft);
 
         db.insert(StatContract.Stat.TABLE_NAME, null, cv);
     }
@@ -119,5 +119,10 @@ public class BattleRecord {
 
     public int getShipsLeft() {
         return shipsLeft;
+    }
+
+    @Override
+    public int compareTo(BattleRecord battleRecord) {
+        return time.compareTo(battleRecord.getTime());
     }
 }

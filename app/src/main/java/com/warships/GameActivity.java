@@ -78,7 +78,7 @@ public class GameActivity extends AppCompatActivity {
                         ongoingBattle.getShootsNumber(),
                         ongoingBattle.getConfig().getMaxShootsNumber() - ongoingBattle.getShootsNumber(),
                         ongoingBattle.getDamage(),
-                        ongoingBattle.getTotalShipsCellsNumber()
+                        ongoingBattle.getTotalShipsCellsNumber() - ongoingBattle.getDamage()
                 );
                 DbHelper dbHelper = new DbHelper(view.getContext());
                 SQLiteDatabase db = dbHelper.getWritableDatabase();

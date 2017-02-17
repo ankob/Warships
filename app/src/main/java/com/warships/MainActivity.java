@@ -13,10 +13,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.warships.db.DbHelper;
 import com.warships.model.User;
 
 import layout.MainScreenFragment;
 import layout.SettingsFragment;
+import layout.StatisticsFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        DbHelper dbHelper = new DbHelper(getBaseContext());
+        User.reloadCurrentUserData(dbHelper.getReadableDatabase());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -102,6 +106,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_main:
                 newFragment = new MainScreenFragment();
+                break;
+            case R.id.nav_statistics:
+                newFragment = new StatisticsFragment();
                 break;
             default:
                 break;

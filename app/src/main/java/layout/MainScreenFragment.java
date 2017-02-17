@@ -35,16 +35,12 @@ public class MainScreenFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static MainScreenFragment newInstance() {
         MainScreenFragment fragment = new MainScreenFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
     }
 
     @Override
@@ -55,8 +51,15 @@ public class MainScreenFragment extends Fragment {
             TextView currentWinrate = (TextView) getView().findViewById(R.id.current_winrate_label);
             userGreetings.setText(String.format((String) getText(R.string.player_greetings), User.getCurrentUser().getName()));
             BattleConfig currentUserSettings = User.getCurrentUser().getCurrentSettings();
-            if (currentUserSettings != null)
+            TextView playLabel = (TextView) getView().getRootView().findViewById(R.id.text_play_button_label);
+            if (currentUserSettings != null) {
                 currentSettings.setText(currentUserSettings.getName());
+                playLabel.setText(R.string.play_button_label);
+                getView().getRootView().findViewById(R.id.play_button).setEnabled(true);
+            } else {
+                playLabel.setText(R.string.no_current_settings_message);
+                getView().getRootView().findViewById(R.id.play_button).setEnabled(false);
+            }
             currentWinrate.setText(String.format("%02.2f%%", User.getCurrentUser().getWinRate() * 100));
         }
         super.onResume();

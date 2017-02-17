@@ -8,6 +8,7 @@ import com.warships.db.UserContract;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,6 +76,7 @@ public class User {
 
     public static void reloadCurrentUserData(SQLiteDatabase db) {
         currentUser.battleRecords = BattleRecord.getRecordsFromDB(db, currentUser.getId());
+        Collections.sort(currentUser.battleRecords);
         currentUser.settings = BattleConfig.getRecordsFromDB(db, currentUser.getId());
         for (BattleConfig bc: currentUser.settings)
             if (bc.isCurrent()) currentUser.currentSettings = bc;
