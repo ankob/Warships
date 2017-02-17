@@ -82,24 +82,29 @@ public class SettingsFragment extends Fragment {
                     }
                 }
         );
-        ((Spinner) v.findViewById(R.id.setting_spinner)).setOnItemClickListener(
-                new AdapterView.OnItemClickListener() {
+        ((Spinner) v.findViewById(R.id.setting_spinner)).setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
                     @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         String name = (String) adapterView.getItemAtPosition(i);
                         for (BattleConfig bc: User.getCurrentUser().getSettings())
                             if (bc.getName().equals(name)) currentEditingConfig = bc;
                         List<Integer> sizes = currentEditingConfig.getShipsPlacement();
-                        ((SeekBar) view.findViewById(R.id.ships_number_bar)).setProgress(sizes.size());
-                        ((EditText) view.findViewById(R.id.config_name_input)).setText(currentEditingConfig.getName());
-                        ((EditText) view.findViewById(R.id.shoots_number_input)).setText(currentEditingConfig.getMaxShootsNumber());
+                        ((SeekBar) adapterView.getRootView().findViewById(R.id.ships_number_bar)).setProgress(sizes.size());
+                        ((EditText) adapterView.getRootView().findViewById(R.id.config_name_input)).setText(currentEditingConfig.getName());
+                        ((EditText) adapterView.getRootView().findViewById(R.id.shoots_number_input)).setText(Integer.toString(currentEditingConfig.getMaxShootsNumber()));
                         for (int cnt = 0; cnt < shipsLengthes.length; cnt ++) {
-                            if (cnt <= sizes.size()) {
+                            if (cnt < sizes.size()) {
                                 shipsLengthes[cnt].setEnabled(true);
                                 shipsLengthes[cnt].setProgress(sizes.get(cnt));
                             } else
                                 shipsLengthes[cnt].setEnabled(false);
                         }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
                     }
                 }
         );
@@ -138,72 +143,63 @@ public class SettingsFragment extends Fragment {
         super.onDetach();
     }
 
-    private void initButtonsBehavior(final View v) {
-        v.findViewById(R.id.delete_settings_button).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (currentEditingConfig != null) {
-                            DbHelper dbHelper = new DbHelper(view.getContext());
-                            SQLiteDatabase db = dbHelper.getWritableDatabase();
-                            currentEditingConfig.deleteConfig(db);
-                            db = dbHelper.getReadableDatabase();
-                            User.reloadCurrentUserData(db);
-                        }
+    private final View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (currentEditingConfig != null) {
+                if (view.getId() == R.id.save_settings_button) {
+                    boolean nameFound = false;
+                    for (BattleConfig bc : User.getCurrentUser().getSettings())
+                        nameFound = nameFound || (currentEditingConfig.getName().equals(bc.getName()) && bc != currentEditingConfig);
+                    if (nameFound) {
+                        Snackbar.make(view.getRootView(), R.string.settings_name_duplicate_error, Snackbar.LENGTH_SHORT);
+                        return;
                     }
                 }
-        );
-        v.findViewById(R.id.save_settings_button).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (currentEditingConfig != null) {
-                            boolean nameFound = false;
-                            for (BattleConfig bc: User.getCurrentUser().getSettings())
-                                nameFound = nameFound || (currentEditingConfig.getName().equals(bc.getName()) && bc != currentEditingConfig);
-                            if (nameFound) {
-                                Snackbar.make(view.getRootView(), R.string.settings_name_duplicate_error, Snackbar.LENGTH_SHORT);
-                            }
-                            currentEditingConfig.setMaxShootsNumber(
-                                    Integer.parseInt(
-                                            ((EditText) v.findViewById(R.id.shoots_number_input)).getText().toString()
-                                    )
-                            );
-                            currentEditingConfig.setName(
-                                    ((EditText) v.findViewById(R.id.config_name_input)).getText().toString()
-                            );
-                            LinkedList<Integer> placement = new LinkedList<Integer>();
-                            for (SeekBar sb: shipsLengthes) {
-                                if (sb.isEnabled())
-                                    placement.add(sb.getProgress());
-                            }
-                            currentEditingConfig.setShipsPlacement(
-                                    placement
-                            );
-                            DbHelper dbHelper = new DbHelper(view.getContext());
-                            SQLiteDatabase db = dbHelper.getWritableDatabase();
-                            currentEditingConfig.writeConfigToDB(db);
-                            db = dbHelper.getReadableDatabase();
-                            User.reloadCurrentUserData(db);
+                DbHelper dbHelper = new DbHelper(view.getContext());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                switch (view.getId()) {
+                    case R.id.delete_settings_button:
+                        currentEditingConfig.deleteConfig(db);
+                        break;
+                    case R.id.save_settings_button:
+                        currentEditingConfig.setMaxShootsNumber(
+                                Integer.parseInt(
+                                        ((EditText) view.getRootView().findViewById(R.id.shoots_number_input)).getText().toString()
+                                )
+                        );
+                        currentEditingConfig.setName(
+                                ((EditText) view.getRootView().findViewById(R.id.config_name_input)).getText().toString()
+                        );
+                        LinkedList<Integer> placement = new LinkedList<>();
+                        for (SeekBar sb : SettingsFragment.this.shipsLengthes) {
+                            if (sb.isEnabled())
+                                placement.add(sb.getProgress());
                         }
-                    }
-                }
-        );
-        v.findViewById(R.id.set_current_settings_button).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        DbHelper dbHelper = new DbHelper(view.getContext());
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
-                        for (BattleConfig bc: User.getCurrentUser().getSettings()) {
+                        currentEditingConfig.setShipsPlacement(
+                                placement
+                        );
+                        currentEditingConfig.writeConfigToDB(db);
+                        break;
+                    case R.id.set_current_settings_button:
+                        for (BattleConfig bc : User.getCurrentUser().getSettings()) {
                             bc.setCurrent(bc == currentEditingConfig);
                             bc.writeConfigToDB(db);
                         }
-                        db = dbHelper.getReadableDatabase();
-                        User.reloadCurrentUserData(db);
-                    }
+                        break;
+                    default:
+                        break;
                 }
-        );
+                db = dbHelper.getReadableDatabase();
+                User.reloadCurrentUserData(db);
+            }
+        }
+    };
+
+    private void initButtonsBehavior(View v) {
+        v.findViewById(R.id.delete_settings_button).setOnClickListener(onClickListener);
+        v.findViewById(R.id.save_settings_button).setOnClickListener(onClickListener);
+        v.findViewById(R.id.set_current_settings_button).setOnClickListener(onClickListener);
         v.findViewById(R.id.create_settings_button).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -215,9 +211,9 @@ public class SettingsFragment extends Fragment {
                                 false,
                                 "New Settings"
                         );
-                        ((SeekBar) v.findViewById(R.id.ships_number_bar)).setProgress(0);
-                        ((EditText) v.findViewById(R.id.config_name_input)).setText("NewSettings");
-                        ((EditText) v.findViewById(R.id.shoots_number_input)).setText("100");
+                        ((SeekBar) view.getRootView().findViewById(R.id.ships_number_bar)).setProgress(0);
+                        ((EditText) view.getRootView().findViewById(R.id.config_name_input)).setText("NewSettings");
+                        ((EditText) view.getRootView().findViewById(R.id.shoots_number_input)).setText("100");
                     }
                 }
         );

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="single"
+        android:id="@+id/nav_">
         <item android:title="@string/main_screen_nav_label"
-            android:id="@+id/main_screen"
+            android:id="@+id/nav_main"
             android:icon="@drawable/ic_menu_slideshow" />
         <item android:title="@string/settings_nav_title"
             android:id="@+id/nav_settings"

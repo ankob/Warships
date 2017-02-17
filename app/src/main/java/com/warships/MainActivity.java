@@ -92,16 +92,23 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_settings) {
-            // Create new fragment and transaction
-            Fragment newFragment = new SettingsFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        Fragment newFragment = null;
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-            transaction.replace(R.id.content_main, newFragment);
-            transaction.addToBackStack(null);
-
-            transaction.commit();
+        switch (id) {
+            case R.id.nav_settings:
+                // Create new fragment and transaction
+                newFragment = new SettingsFragment();
+                break;
+            case R.id.nav_main:
+                newFragment = new MainScreenFragment();
+                break;
+            default:
+                break;
         }
+        transaction.replace(R.id.content_main, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
