@@ -112,10 +112,7 @@ public class SettingsFragment extends Fragment {
         return v;
     }
 
-    @Override
-    public void onResume() {
-
-        View v = getView();
+    private void updateSpinner(View v) {
         Spinner settingsSpinner = (Spinner) v.findViewById(R.id.setting_spinner);
         LinkedList<CharSequence> names = new LinkedList<>();
         for (BattleConfig bc: User.getCurrentUser().getSettings()) {
@@ -130,6 +127,13 @@ public class SettingsFragment extends Fragment {
         settingsSpinner.setAdapter(adapter);
         if (currentEditingConfig != null)
             settingsSpinner.setSelection(names.indexOf(currentEditingConfig.getName()));
+    }
+
+    @Override
+    public void onResume() {
+
+        View v = getView();
+        updateSpinner(v);
         super.onResume();
     }
 
@@ -152,7 +156,7 @@ public class SettingsFragment extends Fragment {
                     for (BattleConfig bc : User.getCurrentUser().getSettings())
                         nameFound = nameFound || (currentEditingConfig.getName().equals(bc.getName()) && bc != currentEditingConfig);
                     if (nameFound) {
-                        Snackbar.make(view.getRootView(), R.string.settings_name_duplicate_error, Snackbar.LENGTH_SHORT);
+                        Snackbar.make(view, R.string.settings_name_duplicate_error, Snackbar.LENGTH_SHORT);
                         return;
                     }
                 }
@@ -161,6 +165,7 @@ public class SettingsFragment extends Fragment {
                 switch (view.getId()) {
                     case R.id.delete_settings_button:
                         currentEditingConfig.deleteConfig(db);
+                        Snackbar.make(view, "Deleted successfully", Snackbar.LENGTH_SHORT);
                         break;
                     case R.id.save_settings_button:
                         currentEditingConfig.setMaxShootsNumber(
@@ -180,6 +185,7 @@ public class SettingsFragment extends Fragment {
                                 placement
                         );
                         currentEditingConfig.writeConfigToDB(db);
+                        Snackbar.make(view, "Updated successfully", Snackbar.LENGTH_SHORT);
                         break;
                     case R.id.set_current_settings_button:
                         for (BattleConfig bc : User.getCurrentUser().getSettings()) {
@@ -192,6 +198,7 @@ public class SettingsFragment extends Fragment {
                 }
                 db = dbHelper.getReadableDatabase();
                 User.reloadCurrentUserData(db);
+                updateSpinner(getView());
             }
         }
     };
@@ -205,7 +212,7 @@ public class SettingsFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         currentEditingConfig = new BattleConfig(
-                                0,
+                                BattleConfig.NEW_CONFIG_ID,
                                 new ArrayList<Integer>(),
                                 100,
                                 false,

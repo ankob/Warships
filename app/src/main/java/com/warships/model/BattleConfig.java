@@ -20,6 +20,7 @@ import java.util.Set;
 public class BattleConfig {
     public static final int MAX_SHIP_LENGTH = 4;
     public static final int MIN_SHIP_LENGTH = 1;
+    public static final long NEW_CONFIG_ID = -1;
 
     private long id;
     private int maxShipsNumber = 5;
@@ -151,11 +152,21 @@ public class BattleConfig {
         cv.put(SettingsContract.Settings.USER, Long.toString(User.getCurrentUser().getId()));
 
         StringBuilder placement = new StringBuilder();
-        for (Integer i: shipsPlacement) placement.append(i);
+        for (Integer i: shipsPlacement) {
+            placement.append(i);
+            placement.append(',');
+        }
+        placement.deleteCharAt(placement.length() - 1); // last coma
 
         cv.put(SettingsContract.Settings.PLACEMENT, placement.toString());
 
-        db.insert(SettingsContract.Settings.TABLE_NAME, null, cv);
+        if (getId() == NEW_CONFIG_ID) {
+            db.insert(SettingsContract.Settings.TABLE_NAME, null, cv);
+        } else {
+            String where = SettingsContract.Settings._ID + " = ?";
+            String[] whereArgs = { Long.toString(id) };
+            db.update(SettingsContract.Settings.TABLE_NAME, cv, where, whereArgs);
+        }
     }
 
     private static List<Integer> textToShipsPlacement(String s) {
@@ -236,7 +247,7 @@ class Ship implements Unit {
     }
 
     public boolean isIntersecting(Unit that){
-        return ((HashSet<Point>) this.ship.clone()).retainAll(that.getUnitArea());
+        return ((HashSet<Point>) this.ship.clone()).removeAll(that.getUnitArea());
     }
 
     @Override
@@ -258,4 +269,13 @@ class Ship implements Unit {
         return top;
     }
 
+    @Override
+    public String toString() {
+        return "Ship{" +
+                "right=" + right +
+                ", left=" + left +
+                ", bottom=" + bottom +
+                ", top=" + top +
+                '}';
+    }
 }

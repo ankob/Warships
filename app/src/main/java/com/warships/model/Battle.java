@@ -1,5 +1,7 @@
 package com.warships.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -88,9 +90,10 @@ public class Battle {
                 if (checkShipPlace(testShip)) {
                     addShipUnsafe(testShip);
                 }
-                filled = ships.size() == config.getMaxShipsNumber();
-                if (filled)
+                filled = ships.size() == shipsSizes.size();
+                if (filled) {
                     break;
+                }
             }
         }
         for (Ship s: ships) shipsCells.addAll(s.getUnitArea());
@@ -105,21 +108,23 @@ public class Battle {
         int bottom = ship.getBottom();
         int left = ship.getLeft();
         int right = ship.getRight();
-        if (top < 0 || bottom < 0 || left < 0 || right < 0)
+        if (top < 0 || bottom < 0 || left < 0 || right < 0) {
             return false;
-        if (top != bottom && left != right)
+        }
+        if (top != bottom && left != right) {
             return false;
-        if (top < bottom || right < left)
+        }
+        if (top > bottom || right > left) {
             return false;
-        if (bottom - top + 1 > BattleConfig.MAX_SHIP_LENGTH || right - left + 1 > BattleConfig.MAX_SHIP_LENGTH)
+        }
+        if (bottom >= config.getFieldSize() || right >= config.getFieldSize()) {
             return false;
-        if (bottom - top + 1 < BattleConfig.MIN_SHIP_LENGTH || right - left + 1 < BattleConfig.MIN_SHIP_LENGTH)
-            return false;
+        }
         boolean isIntersection = false;
         Ship newShip = new Ship(top, bottom, right, left);
         for (Ship s: ships) {
             isIntersection = isIntersection || s.isIntersecting(newShip);
         }
-        return isIntersection;
+        return !isIntersection;
     }
 }

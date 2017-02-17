@@ -1,13 +1,16 @@
 package layout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.warships.GameActivity;
 import com.warships.R;
 import com.warships.model.BattleConfig;
 import com.warships.model.User;
@@ -64,6 +67,14 @@ public class MainScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_main_screen, container, false);
+        ImageButton playButton = (ImageButton) v.findViewById(R.id.play_button);
+        playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent gameActivity = new Intent(view.getRootView().getContext(), GameActivity.class);
+                startActivity(gameActivity);
+            }
+        });
         return v;
     }
 
