@@ -179,29 +179,29 @@ public class SettingsFragment extends Fragment {
                 }
                 DbHelper dbHelper = new DbHelper(view.getContext());
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
+                currentEditingConfig.setMaxShootsNumber(
+                        Integer.parseInt(
+                                ((EditText) view.getRootView().findViewById(R.id.shoots_number_input)).getText().toString()
+                        )
+                );
+                currentEditingConfig.setName(
+                        ((EditText) view.getRootView().findViewById(R.id.config_name_input)).getText().toString()
+                );
+                LinkedList<Integer> placement = new LinkedList<>();
+                for (SeekBar sb : SettingsFragment.this.shipsLengthes) {
+                    if (sb.isEnabled()) {
+                        placement.add(sb.getProgress());
+                    }
+                }
+                currentEditingConfig.setShipsPlacement(
+                        placement
+                );
                 switch (view.getId()) {
                     case R.id.delete_settings_button:
                         currentEditingConfig.deleteConfig(db);
                         Snackbar.make(view, "Deleted successfully", Snackbar.LENGTH_SHORT).show();
                         break;
                     case R.id.save_settings_button:
-                        currentEditingConfig.setMaxShootsNumber(
-                                Integer.parseInt(
-                                        ((EditText) view.getRootView().findViewById(R.id.shoots_number_input)).getText().toString()
-                                )
-                        );
-                        currentEditingConfig.setName(
-                                ((EditText) view.getRootView().findViewById(R.id.config_name_input)).getText().toString()
-                        );
-                        LinkedList<Integer> placement = new LinkedList<>();
-                        for (SeekBar sb : SettingsFragment.this.shipsLengthes) {
-                            if (sb.isEnabled()) {
-                                placement.add(sb.getProgress());
-                            }
-                        }
-                        currentEditingConfig.setShipsPlacement(
-                                placement
-                        );
                         currentEditingConfig.writeConfigToDB(db);
                         Snackbar.make(view, "Updated successfully", Snackbar.LENGTH_SHORT).show();
                         break;

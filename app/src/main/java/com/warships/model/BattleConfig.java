@@ -156,7 +156,8 @@ public class BattleConfig {
             placement.append(i);
             placement.append(',');
         }
-        placement.deleteCharAt(placement.length() - 1); // last coma
+        if (placement.length() != 0)
+            placement.deleteCharAt(placement.length() - 1); // last coma
 
         cv.put(SettingsContract.Settings.PLACEMENT, placement.toString());
 

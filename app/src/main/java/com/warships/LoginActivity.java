@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
                         User.getUserFromDB(db, name, pass);
                         if (User.getCurrentUser() == null) {
                             Snackbar.make(
-                                    view.getRootView(),
+                                    view,
                                     R.string.error_while_login,
                                     Snackbar.LENGTH_SHORT
                             ).show();
