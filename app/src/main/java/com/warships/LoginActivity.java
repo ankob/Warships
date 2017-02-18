@@ -35,8 +35,11 @@ public class LoginActivity extends AppCompatActivity {
                         db = dbHelper.getReadableDatabase();
                         User.getUserFromDB(db, name, pass);
                         if (User.getCurrentUser() == null) {
-                            Snackbar sb = Snackbar.make(view.getRootView(), R.string.error_while_creating_user, Snackbar.LENGTH_SHORT);
-                            sb.show();
+                            Snackbar.make(
+                                    view.getRootView(),
+                                    R.string.error_while_creating_user,
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
                         } else {
                             finish();
                         }
@@ -46,8 +49,11 @@ public class LoginActivity extends AppCompatActivity {
 
                         User.getUserFromDB(db, name, pass);
                         if (User.getCurrentUser() == null) {
-                            Snackbar sb = Snackbar.make(view.getRootView(), R.string.error_while_login, Snackbar.LENGTH_SHORT);
-                            sb.show();
+                            Snackbar.make(
+                                    view.getRootView(),
+                                    R.string.error_while_login,
+                                    Snackbar.LENGTH_SHORT
+                            ).show();
                         } else {
                             finish();
                         }

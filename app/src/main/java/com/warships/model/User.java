@@ -77,6 +77,7 @@ public class User {
     public static void reloadCurrentUserData(SQLiteDatabase db) {
         currentUser.battleRecords = BattleRecord.getRecordsFromDB(db, currentUser.getId());
         Collections.sort(currentUser.battleRecords);
+        Collections.reverse(currentUser.battleRecords);
         currentUser.settings = BattleConfig.getRecordsFromDB(db, currentUser.getId());
         for (BattleConfig bc: currentUser.settings)
             if (bc.isCurrent()) currentUser.currentSettings = bc;

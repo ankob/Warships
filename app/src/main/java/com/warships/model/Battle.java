@@ -27,7 +27,10 @@ public class Battle {
     }
 
     public void shoot(int x, int y) {
-        shoots.add(new Point(x ,y));
+        Point newShoot = new Point(x ,y);
+        if (shoots.contains(newShoot))
+            return;
+        shoots.add(newShoot);
         if (shoots.containsAll(shipsCells))
             currentGameState = GameState.Win;
         else if (shoots.size() == config.getMaxShootsNumber())
@@ -144,5 +147,12 @@ public class Battle {
 
     public int getTotalShipsCellsNumber() {
         return shipsCells.size();
+    }
+
+    public void showBattlefield () {
+        shoots.clear();
+        for (int x = 0; x < config.getFieldSize(); x++)
+            for (int y = 0; y < config.getFieldSize(); y++)
+                shoots.add(new Point(x, y));
     }
 }

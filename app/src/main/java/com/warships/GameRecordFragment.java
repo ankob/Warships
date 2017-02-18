@@ -82,7 +82,7 @@ public class GameRecordFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_game_record, container, false);
         ((TextView) v.findViewById(R.id.game_time_label)).setText(mParamTime);
-        ((TextView) v.findViewById(R.id.game_win_lose_label)).setText(Boolean.toString(mParamWin));
+        ((TextView) v.findViewById(R.id.game_win_lose_label)).setText(mParamWin ? "Win" : "Lose");
         ((TextView) v.findViewById(R.id.game_damage_label)).setText(Integer.toString(mParamDamage));
         ((TextView) v.findViewById(R.id.game_ships_left_label)).setText(Integer.toString(mParamShipseft));
         ((TextView) v.findViewById(R.id.game_moves_label)).setText(Integer.toString(mParamMoves));
