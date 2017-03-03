@@ -23,6 +23,8 @@ import layout.StatisticsFragment;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    int fragmentsCounter = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,10 +54,11 @@ public class MainActivity extends AppCompatActivity
         DbHelper dbHelper = new DbHelper(getBaseContext());
         User.reloadCurrentUserData(dbHelper.getReadableDatabase());
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        if (drawer.isDrawerOpen(GravityCompat.START) && fragmentsCounter != 0) {
             drawer.closeDrawer(GravityCompat.START);
+            fragmentsCounter--;
         } else {
-            super.onBackPressed();
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 
@@ -116,6 +119,7 @@ public class MainActivity extends AppCompatActivity
         transaction.replace(R.id.content_main, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+        fragmentsCounter++;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
